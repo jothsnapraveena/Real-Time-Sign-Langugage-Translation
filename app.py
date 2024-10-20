@@ -37,13 +37,13 @@ def main():
         """
         <style>
         .main {
-            background-color: #20242B; /* Dark background */
+            background-color: #FF6347; /* Dark background */
             color: white;  /* White text for contrast */
         }
         .header {
             font-family: 'Arial Black', sans-serif;
             font-size: 40px;
-            color: #FF6347; /* Tomato color for the title */
+            color:#20242B ; /* Tomato color for the title */
             text-align: left;
             padding: 20px;
         }
@@ -52,7 +52,7 @@ def main():
             color: #E0E0E0;
         }
         .sidebar {
-            background-color: #282C34; /* Dark sidebar */
+            background-color: #000000; /* Dark sidebar */
             color: white;
             padding: 20px;
         }
@@ -64,14 +64,35 @@ def main():
         unsafe_allow_html=True
     )
 
-    # Title and logo section on the left
+    # Title and logo 
     
-    st.markdown('<div class="header">SignPal</div>', unsafe_allow_html=True)
-    st.markdown('<div class="caption">Bridging Conversations</div>', unsafe_allow_html=True)
+    st.markdown(
+    """
+    <style>
+    .header {
+        text-align: center;
+        font-size: 48px;
+        font-weight: bold;
+        margin-bottom:5px;
+    }
+    .caption {
+        text-align: center;
+        font-size: 24px;
+        color: white;
+        font-style: italic;
+        margin-top:0;
+    }
+    </style>
+    <div class="header">SignPAL</div>
+    <div class="caption">Bridging Conversations</div>
+    """, 
+    unsafe_allow_html=True
+    )
+
 
     # Sidebar details with some styling
     with st.sidebar:
-        st.image("logo.jpg", width=150)
+        st.image("logo.jpg", width=200)
 
         st.header("Details")
         
@@ -106,7 +127,7 @@ def main():
 
 
 
-    st.header("Real-Time Sign Language Interpretation")
+    
     st.write("The model will process video input and translate sign language gestures in real-time.")
 
     video_placeholder = st.empty()
