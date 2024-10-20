@@ -8,8 +8,6 @@ from scipy import stats
 # Actions that we try to detect
 actions = np.array(['hello', 'how', 'you', 'fine'])
 
-
-
 # Initialize MediaPipe solutions
 mp_holistic = mp.solutions.holistic
 mp_drawing = mp.solutions.drawing_utils
@@ -21,7 +19,6 @@ def mediapipe_detection(image, model):
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     return image, results
-
 
 def extract_keypoints(results):
     pose = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark]).flatten() if results.pose_landmarks else np.zeros(33*4)
@@ -46,36 +43,20 @@ def main():
 
     # Your existing CSS styles
     st.markdown("""
-        <style>
-        .main {
-            background-color: #FF6347;
-            color: white;
-        }
-        .header {
-            font-family: 'Arial Black', sans-serif;
-            font-size: 40px;
-            color:#20242B;
-            text-align: left;
-            padding: 20px;
-        }
-        .caption {
-            font-size: 20px;
-            color: #E0E0E0;
-        }
-        .sidebar {
-            background-color: #000000;
-            padding: 20px;
-        }
-        .sidebar h2 {
-            color: #FF6347;
-        }
-        </style>
+        
         """, unsafe_allow_html=True)
-
     # Title and Header
     st.markdown("""
-        <div class="header">SignPAL</div>
-        <div class="caption">Bridging Conversations</div>
+        
+
+SignPAL
+
+
+        
+
+Bridging Conversations
+
+
         """, unsafe_allow_html=True)
 
     # Sidebar
@@ -126,55 +107,59 @@ def main():
         
     if stop_button:
         st.session_state.is_camera_on = False
-
     if st.session_state.is_camera_on:
         try:
-            cap = cv2.VideoCapture(0)
-            if not cap.isOpened():
-                st.error("Failed to open webcam. Please check your camera connection.")
-                st.session_state.is_camera_on = False
-                return
+            # Use Streamlit's built-in camera access
+            video_capture = st.camera_input("Capture Video")
 
-            sequence = []
-            sentence = []
-            predictions = []
-            threshold = 0.7
+            if video_capture:
+                # Read the video stream
+                cap = cv2.VideoCapture(video_capture)
+                if not cap.isOpened():
+                    st.error("Failed to open webcam. Please check your camera connection.")
+                    st.session_state.is_camera_on = False
+                    return
 
-            with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-                while cap.isOpened() and st.session_state.is_camera_on:
-                    ret, frame = cap.read()
-                    if not ret or frame is None:
-                        st.warning("Failed to capture frame. Retrying...")
-                        continue
+                sequence = []
+                sentence = []
+                predictions = []
+                threshold = 0.7
 
-                    # Process frame
-                    image, results = mediapipe_detection(frame, holistic)
-                    keypoints = extract_keypoints(results)
-                    sequence.append(keypoints)
-                    sequence = sequence[-30:]
+                with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
+                    while cap.isOpened() and st.session_state.is_camera_on:
+                        ret, frame = cap.read()
+                        if not ret or frame is None:
+                            st.warning("Failed to capture frame. Retrying...")
+                            continue
 
-                    if len(sequence) == 30:
-                        res = model.predict(np.expand_dims(sequence, axis=0))[0]
-                        predictions.append(np.argmax(res))
+                        # Process frame
+                        image, results = mediapipe_detection(frame, holistic)
+                        keypoints = extract_keypoints(results)
+                        sequence.append(keypoints)
+                        sequence = sequence[-30:]
 
-                        if np.unique(predictions[-10:])[0] == np.argmax(res):
-                            if res[np.argmax(res)] > threshold:
-                                if len(sentence) > 0:
-                                    if actions[np.argmax(res)] != sentence[-1]:
+                        if len(sequence) == 30:
+                            res = model.predict(np.expand_dims(sequence, axis=0))[0]
+                            predictions.append(np.argmax(res))
+
+                            if np.unique(predictions[-10:])[0] == np.argmax(res):
+                                if res[np.argmax(res)] > threshold:
+                                    if len(sentence) > 0:
+                                        if actions[np.argmax(res)] != sentence[-1]:
+                                            sentence.append(actions[np.argmax(res)])
+                                    else:
                                         sentence.append(actions[np.argmax(res)])
-                                else:
-                                    sentence.append(actions[np.argmax(res)])
 
-                        if len(sentence) > 5:
-                            sentence = sentence[-5:]
+                            if len(sentence) > 5:
+                                sentence = sentence[-5:]
 
-                    # Draw text on frame
-                    cv2.rectangle(image, (0,0), (640, 40), (245, 117, 16), -1)
-                    cv2.putText(image, ' '.join(sentence), (4,30),
-                              cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                        # Draw text on frame
+                        cv2.rectangle(image, (0,0), (640, 40), (245, 117, 16), -1)
+                        cv2.putText(image, ' '.join(sentence), (4,30),
+                                  cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
-                    # Display frame
-                    video_placeholder.image(image, channels="BGR")
+                        # Display frame
+                        video_placeholder.image(image, channels="BGR")
 
                 cap.release()
                 cv2.destroyAllWindows()

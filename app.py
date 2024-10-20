@@ -129,6 +129,7 @@ def main():
 
     
     st.write("The model will process video input and translate sign language gestures in real-time.")
+    
 
     video_placeholder = st.empty()
     stop_button = st.button("Stop")
