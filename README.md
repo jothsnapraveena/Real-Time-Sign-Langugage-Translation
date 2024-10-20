@@ -1,8 +1,6 @@
 ![SignPal Logo](logo.jpg)
 
-
-# Real-Time Sign Language Translation
-
+Welcome to the SignPal project! This tool translates sign language gestures into real-time English captions.
 
 ### Table of Contents
 - [Project Overview](#project-overview)
