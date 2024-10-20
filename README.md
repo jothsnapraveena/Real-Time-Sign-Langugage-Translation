@@ -1,3 +1,6 @@
+![SignPal Logo](logo.jpeg)
+
+
 # Real-Time Sign Language Translation
 
 
