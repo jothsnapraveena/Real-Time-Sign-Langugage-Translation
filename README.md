@@ -1,5 +1,5 @@
 # Real-Time Sign Language Translation
-## Sign Language Interpretation Application
+
 
 ### Table of Contents
 - [Project Overview](#project-overview)
