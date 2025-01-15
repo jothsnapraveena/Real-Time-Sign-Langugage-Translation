@@ -49,6 +49,7 @@ Our objective is to create an accessible communication tool for individuals who 
 ### Technologies Used
 - Python
 - TensorFlow/Keras (for the deep learning model)
+- Long Short Term Memory architecture
 - Streamlit (for web application development)
 - OpenCV (for video processing)
 - MediaPipe (for gesture detection)
